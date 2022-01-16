@@ -39,18 +39,8 @@ class TestingConfig(Config):
     assert exists(db_url_testing_path), ("need to have the %s file (check README)") % (db_url_testing_path)
     SQLALCHEMY_DATABASE_URI = db_url_testing_path.read_text().strip()
 
-
-config = StagingConfig() # for staging
-
-
-# Uncomment the following block of code on the production server
-"""
 class ProductionConfig(Config):
     DEBUG = False
     db_url_production_path = Path(join(secret_dir, "db_url_production"))
     assert exists(db_url_production_path), ("need to have the %s file (check README)") % (db_url_production_path)
     SQLALCHEMY_DATABASE_URI = db_url_production_path.read_text().strip()
-
-
-config = ProductionConfig() # for production
-"""

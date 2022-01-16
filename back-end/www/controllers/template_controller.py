@@ -4,12 +4,11 @@ from flask import Blueprint
 from flask import request
 from flask import jsonify
 from flask import make_response
+from flask import current_app
 from util.util import InvalidUsage
 from util.util import handle_invalid_usage
 from util.util import decode_user_token
 from util.util import try_wrap_response
-from config.config import config
-
 
 bp = Blueprint("template_controller", __name__)
 
@@ -37,7 +36,9 @@ def template():
     # Sanity and permission check
     # (POST, PATCH, and DELETE methods are for administrators only)
     if request.method in ["POST", "PATCH", "DELETE"]:
-        error, _ = decode_user_token(rj, config.JWT_PRIVATE_KEY, check_if_admin=True)
+        error, _ = decode_user_token(rj,
+                                     current_app.config.JWT_PRIVATE_KEY,
+                                     check_if_admin=True)
         if error is not None: return error
 
     # Process the request

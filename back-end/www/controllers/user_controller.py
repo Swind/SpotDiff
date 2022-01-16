@@ -5,13 +5,12 @@ import uuid
 from flask import Blueprint
 from flask import request
 from flask import jsonify
+from flask import current_app
 from util.util import InvalidUsage
 from util.util import handle_invalid_usage
 from util.util import encode_jwt
-from config.config import config
 from models.model_operations.user_operations import get_user_by_client_id
 from models.model_operations.user_operations import create_user
-
 
 bp = Blueprint("user_controller", __name__)
 
@@ -71,11 +70,11 @@ def get_user_token_by_client_id(client_id):
     """
     user = get_user_by_client_id(client_id)
     if user is None:
-        user = create_user(client_id) # create a new user if not found
+        user = create_user(client_id)  # create a new user if not found
     user_id = user.id
     client_type = user.client_type
     if client_type == -1:
-        return None # a banned user does not get the token
+        return None  # a banned user does not get the token
     else:
         user_token = encode_user_jwt(user_id=user_id, client_type=client_type)
         return user_token
@@ -88,7 +87,7 @@ def encode_user_jwt(**kwargs):
     payload["iat"] = t
     payload["jti"] = uuid.uuid4().hex
     payload["iss"] = "[CHANGE_THIS_TO_YOUR_ROOT_URL]"
-    payload["exp"] = t + 3600 # the token will expire after one hour
+    payload["exp"] = t + 3600  # the token will expire after one hour
     for k in kwargs:
         payload[k] = kwargs[k]
-    return encode_jwt(payload, config.JWT_PRIVATE_KEY)
+    return encode_jwt(payload, current_app.config.JWT_PRIVATE_KEY)
